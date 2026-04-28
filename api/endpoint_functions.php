@@ -20,8 +20,8 @@ function GetStats(PDO $pdo, array $params = []): array
             COUNT(*) AS total, 
             SUM(remarquable) AS remarquables, 
             COUNT(DISTINCT id_especes) AS especes,
-            AVG(haut_tot) AS hauteur_moyenne,
-            AVG(age_estime) AS age_moyen
+            ROUND(AVG(haut_tot), 2) AS hauteur_moyenne,
+            ROUND(AVG(age_estime), 2) AS age_moyen
         FROM arbre
     SQL;
     $stmt = $pdo->query($sql);
@@ -182,7 +182,7 @@ function CreateArbre(PDO $pdo, array $params = []): array
     return [
         'status' => 201,
         'body' => [
-            'message' => 'Arbre cree',
+            'message' => 'Arbre crée',
             'data' => ['id_arbre' => (int) $pdo->lastInsertId()],
         ],
     ];
@@ -274,7 +274,6 @@ function getMissingArbreFields(array $body): array
         'haut_tronc',
         'diam_tronc',
         'age_estime',
-        'nb_diagnostic',
         'remarquable',
         'id_stade_dev',
         'id_especes',
@@ -360,8 +359,8 @@ function buildArbrePayload(array $body): array
         'haut_tot' => (float) $body['haut_tot'],
         'haut_tronc' => (float) $body['haut_tronc'],
         'diam_tronc' => (float) $body['diam_tronc'],
-        'age_estime' => (int) $body['age_estime'],
-        'nb_diagnostic' => (int) $body['nb_diagnostic'],
+        'age_estime' => (int) ($body['age_estime'] ?? 0),
+        'nb_diagnostic' => (int) ($body['nb_diagnostic'] ?? 0),
         'date_plantage' => normalizeNullableDate($body['date_plantage'] ?? null),
         'date_abattage' => normalizeNullableDate($body['date_abattage'] ?? null),
         'remarquable' => (int) ((bool) $body['remarquable']),

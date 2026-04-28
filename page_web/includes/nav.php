@@ -5,7 +5,7 @@ $current = basename($_SERVER['PHP_SELF'], '.php');
 <nav class="nav">
   <a href="index.php" class="nav-brand">
     <span class="leaf">🌳</span>
-    <span>ArboData</span>
+    <span>Arbres - St Quentin</span>
   </a>
   <ul class="nav-links">
     <li><a href="index.php" class="<?= $current === 'index' ? 'active' : '' ?>">Accueil</a></li>

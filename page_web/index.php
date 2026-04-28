@@ -1,7 +1,6 @@
 <?php
 require_once 'includes/api.php';
 $stats = getStats();
-echo '<script>console.log(' . json_encode($stats) . ');</script>';
 $total = $stats['total'] ?? 0;
 $remarquables = $stats['remarquables'] ?? 0;
 $especes = $stats['especes'] ?? 0;
@@ -11,7 +10,7 @@ $especes = $stats['especes'] ?? 0;
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ArboData</title>
+  <title>Arbres - St Quentin</title>
   <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -19,8 +18,8 @@ $especes = $stats['especes'] ?? 0;
 <?php include 'includes/nav.php'; ?>
 
 <div class="page-header">
-  <h1>ArboData</h1>
-  <p>Gestion du patrimoine arboré urbain</p>
+  <h1>Arbres - St Quentin</h1>
+  <p>Gestion du patrimoine</p>
 </div>
 
 <div class="container">
@@ -42,34 +41,34 @@ $especes = $stats['especes'] ?? 0;
   </div>
 
   <!-- Description -->
-  <div class="card" style="padding:2rem; margin-bottom:1.5rem;">
-    <h2 style="font-family:'Lora',serif; font-size:1.2rem; margin-bottom:.75rem;">À propos du projet</h2>
-    <p style="color:var(--muted); max-width:640px; line-height:1.75;">
-      ArboData centralise les données du parc arboré urbain. Inventoriez chaque arbre, 
-      suivez leur état sanitaire, visualisez leur répartition géographique et analysez 
+  <div class="card home-about-card">
+    <h2 class="home-about-title">À propos du projet</h2>
+    <p class="home-about-text">
+      Cette application centralise les données des arbres de la ville de St Quentin.
+      Inventoriez chaque arbre, suivez leur état, visualisez leur répartition géographique et analysez 
       les groupes d'arbres similaires par clustering automatique.
     </p>
   </div>
 
   <!-- Navigation cards -->
-  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem;">
+  <div class="home-nav-grid">
 
-    <a href="ajouter.php" class="card" style="padding:1.5rem; text-decoration:none; display:block; transition:border-color .15s;">
-      <div style="font-size:1.4rem; margin-bottom:.75rem;">＋</div>
-      <div style="font-weight:600; margin-bottom:.35rem;">Ajouter un arbre</div>
-      <div style="font-size:.85rem; color:var(--muted);">Enregistrez un nouvel arbre avec ses caractéristiques.</div>
+    <a href="ajouter.php" class="card home-nav-card">
+      <div class="home-nav-icon">＋</div>
+      <div class="home-nav-title">Ajouter un arbre</div>
+      <div class="home-nav-desc">Enregistrez un nouvel arbre avec ses caractéristiques.</div>
     </a>
 
-    <a href="visualisation.php" class="card" style="padding:1.5rem; text-decoration:none; display:block; transition:border-color .15s;">
-      <div style="font-size:1.4rem; margin-bottom:.75rem;">⊞</div>
-      <div style="font-weight:600; margin-bottom:.35rem;">Visualisation</div>
-      <div style="font-size:.85rem; color:var(--muted);">Tableau complet et carte interactive de tous les arbres.</div>
+    <a href="visualisation.php" class="card home-nav-card">
+      <div class="home-nav-icon">⊞</div>
+      <div class="home-nav-title">Visualisation</div>
+      <div class="home-nav-desc">Tableau complet et carte interactive de tous les arbres.</div>
     </a>
 
-    <a href="clusters.php" class="card" style="padding:1.5rem; text-decoration:none; display:block; transition:border-color .15s;">
-      <div style="font-size:1.4rem; margin-bottom:.75rem;">◎</div>
-      <div style="font-weight:600; margin-bottom:.35rem;">Clusters</div>
-      <div style="font-size:.85rem; color:var(--muted);">Prédisez les clusters d'arbres par machine learning.</div>
+    <a href="clusters.php" class="card home-nav-card">
+      <div class="home-nav-icon">◎</div>
+      <div class="home-nav-title">Clusters</div>
+      <div class="home-nav-desc">Prédisez les clusters d'arbres par machine learning.</div>
     </a>
 
   </div>

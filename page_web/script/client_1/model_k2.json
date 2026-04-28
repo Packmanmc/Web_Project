@@ -1,0 +1,11 @@
+{
+  "algorithme": "KMeans",
+  "label_map": {
+    "1": "Petit",
+    "0": "Grand"
+  },
+  "features": [
+    "haut_tot",
+    "tronc_diam"
+  ]
+}

@@ -66,7 +66,7 @@ CREATE TABLE arbre (
   haut_tronc FLOAT NOT NULL,
   diam_tronc FLOAT NOT NULL,
   age_estime INT NOT NULL,
-  nb_diagnostic INT NOT NULL,
+  nb_diagnostic INT,
   date_plantage DATE,
   date_abattage DATE,
   remarquable TINYINT(1) NOT NULL,

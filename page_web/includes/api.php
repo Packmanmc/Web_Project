@@ -124,5 +124,3 @@ function getStats(): array
         'age_moyen' => (float) ($stats['age_moyen'] ?? 0),
     ];
 }
-
-
