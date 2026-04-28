@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arbres - St Quentin</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/index.js"></script>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-brand">
+    <span class="leaf">🌳</span>
+    <span>Arbres - St Quentin</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="Accueil">Accueil</a></li>
+    <li><a href="ajouter.html" class="Ajouter">Ajouter</a></li>
+    <li><a href="visualisation.html" class="Visualisation">Visualisation</a></li>
+    <li><a href="clusters.html" class="Clusters">Clusters</a></li>
+  </ul>
+</nav>
+
+<div class="page-header">
+  <h1>Arbres - St Quentin</h1>
+  <p>Gestion du patrimoine</p> 
+</div>
+
+<div class="container">
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat">
+      <div class="val" id="arbres-count">0</div>
+      <div class="lbl">Arbres</div>
+    </div>
+    <div class="stat">
+      <div class="val" id="remarquables-count">0</div>
+      <div class="lbl">Remarquables</div>
+    </div>
+    <div class="stat">
+      <div class="val" id="especes-count">0</div>
+      <div class="lbl">Espèces</div>
+    </div>
+  </div>
+
+  <!-- Description -->
+  <div class="card home-about-card">
+    <h2 class="home-about-title">À propos du projet</h2>
+    <p class="home-about-text">
+      Cette application centralise les données des arbres de la ville de St Quentin.
+      Inventoriez chaque arbre, suivez leur état, visualisez leur répartition géographique et analysez 
+      les groupes d'arbres similaires par clustering automatique.
+    </p>
+  </div>
+
+  <!-- Navigation cards -->
+  <div class="home-nav-grid">
+
+    <a href="ajouter.html" class="card home-nav-card">
+      <div class="home-nav-icon">＋</div>
+      <div class="home-nav-title">Ajouter un arbre</div>
+      <div class="home-nav-desc">Enregistrez un nouvel arbre avec ses caractéristiques.</div>
+    </a>
+
+    <a href="visualisation.html" class="card home-nav-card">
+      <div class="home-nav-icon">⊞</div>
+      <div class="home-nav-title">Visualisation</div>
+      <div class="home-nav-desc">Tableau complet et carte interactive de tous les arbres.</div>
+    </a>
+
+    <a href="clusters.html" class="card home-nav-card">
+      <div class="home-nav-icon">◎</div>
+      <div class="home-nav-title">Clusters</div>
+      <div class="home-nav-desc">Prédisez les clusters d'arbres par machine learning.</div>
+    </a>
+
+  </div>
+
+</div>
+
+
+</body>
+</html>

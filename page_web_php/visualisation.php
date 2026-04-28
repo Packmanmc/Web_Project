@@ -5,14 +5,14 @@ $stats        = getStats();
 $total        = $stats['total'] ?? 0;
 $remarquables = $stats['remarquables'] ?? 0;
 $especes_u    = $stats['especes'] ?? 0;
-$avg_h        = $stats['hauteur_totale_moyenne'] ?? 0;
+$avg_h        = $stats['hauteur_moyenne'] ?? 0;
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Visualisation — ArboData</title>
+  <title>Visualisation</title>
   <link rel="stylesheet" href="assets/style.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 </head>
@@ -34,17 +34,19 @@ $avg_h        = $stats['hauteur_totale_moyenne'] ?? 0;
     <div class="stat"><div class="val"><?= $especes_u ?></div><div class="lbl">Espèces</div></div>
   </div>
 
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('tableau', this)">Tableau</button>
-    <button class="tab-btn" onclick="switchTab('carte', this)" id="btn-carte">Carte</button>
+
+   <!-- CARTE -->
+  <div>
+    <div id="map" class="viz-map"></div>
   </div>
 
+  
   <!-- TABLEAU -->
-  <div class="tab-panel active" id="tab-tableau">
+  <div>
     <div class="card">
       <div class="table-bar">
         <h2><?= $total ?> arbre<?= $total > 1 ? 's' : '' ?></h2>
-        <div style="display:flex;gap:.6rem;align-items:center;">
+        <div class="viz-table-actions">
           <input class="search" type="text" id="searchInput" placeholder="Rechercher…" oninput="filterTable()">
           <a href="ajouter.php" class="btn btn-primary btn-sm">+ Ajouter</a>
         </div>
@@ -55,22 +57,23 @@ $avg_h        = $stats['hauteur_totale_moyenne'] ?? 0;
             <tr>
               <th>ID</th>
               <th>Espèce</th>
+              <th>X</th>
+              <th>Y</th>
               <th>H. totale</th>
               <th>H. tronc</th>
               <th>Ø tronc</th>
-              <th>Remarquable</th>
-              <th>X (EPSG:3949)</th>
-              <th>Y (EPSG:3949)</th>
-              <th>État</th>
               <th>Stade dev.</th>
+              <th>État</th>
+              <th>Remarquable</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
 
           <!-- Si aucun arbre -->
           <?php if (empty($arbres)): ?>
-            <tr><td colspan="12" style="text-align:center;padding:2rem;color:var(--muted);">
-              Aucun arbre. <a href="ajouter.php" style="color:var(--green);">Ajouter le premier →</a>
+            <tr><td colspan="11" class="viz-empty-cell">
+              Aucun arbre. <a href="ajouter.php" class="viz-empty-link">Ajouter le premier →</a>
             </td></tr>
           
           <!-- Sinon, afficher les arbres -->
@@ -85,50 +88,37 @@ $avg_h        = $stats['hauteur_totale_moyenne'] ?? 0;
             elseif (str_contains($low,'moyen') || str_contains($low,'fair')) $cls = 'badge-yellow';
             elseif (str_contains($low,'mauvais') || str_contains($low,'bad') || str_contains($low,'mort')) $cls = 'badge-red';
           ?>
-            <tr>
-              <td style="color:var(--muted);"><?= (int)($a['id_arbre'] ?? 0) ?></td>
-              <td style="font-style:italic;"><?= htmlspecialchars($especeLabel !== '' ? $especeLabel : '—') ?></td>
+            <tr class="arbre-row" data-id="<?= (int)($a['id_arbre'] ?? 0) ?>" data-x="<?= isset($a['X']) ? (float)$a['X'] : '0' ?>" data-y="<?= isset($a['Y']) ? (float)$a['Y'] : '0' ?>" title="Cliquez pour voir sur la carte">
+              <td class="viz-id-cell"><?= (int)($a['id_arbre'] ?? 0) ?></td>
+              <td class="viz-species-cell"><?= htmlspecialchars($especeLabel !== '' ? $especeLabel : '—') ?></td>
+              <td class="viz-coord-cell"><?= isset($a['X'])  ? $a['X'] : '—' ?></td>
+              <td class="viz-coord-cell"><?= isset($a['Y']) ? $a['Y'] : '—' ?></td>
               <td><?= isset($a['haut_tot']) ? number_format((float)$a['haut_tot'],1).' m' : '—' ?></td>
               <td><?= isset($a['haut_tronc'])  ? number_format((float)$a['haut_tronc'], 1).' m' : '—' ?></td>
               <td><?= isset($a['diam_tronc']) ? number_format((float)$a['diam_tronc'],1).' cm': '—' ?></td>
-              <td><?= !empty($a['remarquable']) ? '<span class="badge badge-green">Oui</span>' : '<span class="badge badge-gray">Non</span>' ?></td>
-              <td style="font-variant-numeric:tabular-nums;font-size:.8rem;"><?= isset($a['X'])  ? number_format((float)$a['X'], 6) : '—' ?></td>
-              <td style="font-variant-numeric:tabular-nums;font-size:.8rem;"><?= isset($a['Y']) ? number_format((float)$a['Y'],6) : '—' ?></td>
-              <td><span class="badge <?= $cls ?>"><?= $etat ?></span></td>
               <td><?= htmlspecialchars($a['stade_dev'] ?? ($a['libelle_stade'] ?? '—')) ?></td>
+              <td><span class="badge <?= $cls ?>"><?= $etat ?></span></td>
+              <td><?= !empty($a['remarquable']) ? '<span class="badge badge-green">Oui</span>' : '<span class="badge badge-gray">Non</span>' ?></td>
+              <td><button class="btn btn-danger btn-xs" onclick="deleteArbre(<?= (int)($a['id_arbre'] ?? 0) ?>, event)">Supprimer</button></td>
             </tr>
           <?php endforeach; endif; ?>
           </tbody>
         </table>
       </div>
-      <div style="padding:.65rem 1.25rem;font-size:.8rem;color:var(--muted);border-top:1px solid var(--border);">
+      <div class="viz-row-count">
         <span id="rowCount"><?= $total ?></span> ligne<?= $total > 1 ? 's' : '' ?>
       </div>
     </div>
   </div>
-
-  <!-- CARTE -->
-  <div class="tab-panel" id="tab-carte">
-    <div id="map" style="height:500px;"></div>
-  </div>
-
-  <!-- CTA -->
-  <div style="margin-top:1.5rem;display:flex;justify-content:flex-end;">
-    <a href="clusters.php" class="btn btn-primary btn-lg">Prédire les clusters →</a>
-  </div>
-
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.11.0/proj4.js"></script>
 <script>
-function switchTab(name, btn) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  btn.classList.add('active');
-  if (name === 'carte' && !window._mapInit) initMap();
-}
+var arbres = <?= json_encode(array_values($arbres), JSON_UNESCAPED_UNICODE) ?>;
+var markerMap = {};
+
+initMap();
 
 function filterTable() {
   const q = document.getElementById('searchInput').value.toLowerCase();
@@ -141,21 +131,20 @@ function filterTable() {
   document.getElementById('rowCount').textContent = n;
 }
 
-var arbres = <?= json_encode(array_values($arbres), JSON_UNESCAPED_UNICODE) ?>;
-
 function initMap() {
   window._mapInit = true;
-  proj4.defs('EPSG:3949', '+proj=lcc +lat_1=48.25 +lat_2=49.75 +lat_0=49 +lon_0=3 +x_0=1700000 +y_0=9200000 +ellps=GRS80 +units=m +no_defs +type=crs');
+  proj4.defs('EPSG:3949', '+proj=lcc +lat_1=48.25 +lat_2=49.75 +lat_0=49 +lon_0=3 +x_0=1700000 +y_0=8200000 +ellps=GRS80 +units=m +no_defs +type=crs');
 
   const SAINT_QUENTIN = [49.8489, 3.2870];
   const map = L.map('map').setView(SAINT_QUENTIN, 13);
+  window.vizMap = map;
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors', maxZoom: 19
   }).addTo(map);
 
   const icon = L.divIcon({
     className: '',
-    html: '<div style="width:10px;height:10px;background:#2e6b45;border:2px solid white;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.3);"></div>',
+    html: '<div class="viz-map-dot"></div>',
     iconSize: [10,10], iconAnchor: [5,5]
   });
 
@@ -168,7 +157,6 @@ function initMap() {
     let lat = null;
     let lng = null;
 
-    // If values are already WGS84, keep them; otherwise convert from EPSG:3949.
     if (Math.abs(x) <= 180 && Math.abs(y) <= 90) {
       lng = x;
       lat = y;
@@ -187,15 +175,17 @@ function initMap() {
       ['Ø tronc',    a.diam_tronc != null ? a.diam_tronc + ' cm' : '—'],
       ['État',       a.etat || '—'],
       ['Stade',      a.stade_dev || '—'],
-    ].map(([k,v]) => `<tr><td style="padding:.15rem .5rem .15rem 0;color:#6b7280;font-size:.78rem;white-space:nowrap">${k}</td><td>${v}</td></tr>`).join('');
+    ].map(([k,v]) => `<tr><td class="viz-tooltip-key">${k}</td><td>${v}</td></tr>`).join('');
 
-    L.marker([lat,lng], {icon}).addTo(map).bindTooltip(
-      `<div style="font-family:'Inter',sans-serif;font-size:.82rem;min-width:160px;">
-        <div style="font-weight:600;margin-bottom:.4rem;font-style:italic;">${a.espece_nom || 'Arbre #'+(a.id_arbre ?? '')}</div>
-        <table style="border-collapse:collapse">${rows}</table>
+    const marker = L.marker([lat,lng], {icon}).addTo(map).bindTooltip(
+      `<div class="viz-tooltip-wrap">
+        <div class="viz-tooltip-title">${a.espece_nom || 'Arbre #'+(a.id_arbre ?? '')}</div>
+        <table class="viz-tooltip-table">${rows}</table>
        </div>`,
       { sticky: true, direction: 'top', offset: [0,-8], opacity: 1 }
     );
+    
+    markerMap[a.id_arbre] = { marker, lat, lng };
     pts.push([lat,lng]);
   });
 
@@ -204,9 +194,61 @@ function initMap() {
   } else {
     map.setView(SAINT_QUENTIN, 13);
   }
+  
+  attachRowClickHandlers();
+}
+
+function attachRowClickHandlers() {
+  document.querySelectorAll('.arbre-row').forEach(row => {
+    row.addEventListener('click', function() {
+      const id = parseInt(this.dataset.id);
+      const x = parseFloat(this.dataset.x);
+      const y = parseFloat(this.dataset.y);
+      
+      if (isNaN(x) || isNaN(y)) return;
+      
+      let lat = null, lng = null;
+      if (Math.abs(x) <= 180 && Math.abs(y) <= 90) {
+        lng = x; lat = y;
+      } else {
+        const wgs84 = proj4('EPSG:3949', 'EPSG:4326', [x, y]);
+        lng = wgs84[0]; lat = wgs84[1];
+      }
+      
+      if (!isNaN(lat) && !isNaN(lng)) {
+        window.vizMap.setView([lat, lng], 16);
+        if (markerMap[id]) {
+          markerMap[id].marker.openTooltip();
+        }
+      }
+    });
+  });
 }
 
 if (window.location.hash === '#carte') document.getElementById('btn-carte').click();
+
+const API_URL = "<?= rtrim(getenv('API_URL') ?: 'http://api', '/') ?>";
+function deleteArbre(id, event) {
+  event.stopPropagation();
+  if (!confirm('Êtes-vous sûr de vouloir supprimer cet arbre ?')) {
+    return;
+  }
+  
+  fetch(API_URL + '/arbres/' + id, { method: 'DELETE' })
+    .then(r => r.json())
+    .then(d => {
+      if (d.error) {
+        alert('Erreur: ' + d.error);
+      } else {
+        document.querySelector('tr[data-id="' + id + '"]').remove();
+        const total = parseInt(document.getElementById('rowCount').textContent) - 1;
+        document.getElementById('rowCount').textContent = total;
+        const h2 = document.querySelector('.table-bar h2');
+        if (h2) h2.textContent = total + ' arbre' + (total > 1 ? 's' : '');
+      }
+    })
+    .catch(e => alert('Erreur lors de la suppression: ' + e));
+}
 </script>
 </body>
 </html>

@@ -350,6 +350,98 @@ function getAllEtat(PDO $pdo): array
     ];
 }
 
+function PredictTreeSize(PDO $pdo, array $params = []): array
+{
+
+    $body = $params['body'] ?? [];
+    $haut_tot = isset($body['haut_tot']) ? (float) $body['haut_tot'] : null;
+    $diam_tronc = isset($body['diam_tronc']) ? (float) $body['diam_tronc'] : null;
+    $k = isset($body['k']) ? (int) $body['k'] : 3;
+
+    $scriptPath = 'client_1/script1.py';
+    $output = [];
+    $returnCode = 0;
+
+    if (!file_exists($scriptPath)) {
+        return ['status' => 404, 'body' => ['error' => 'Script de prédiction non trouvé']];
+    }
+
+    if ($haut_tot === null || $diam_tronc === null || $haut_tot <= 0 || $diam_tronc <= 0) {
+        return ['status' => 400, 'body' => ['error' => 'Hauteur et diamètre doivent être des nombres positifs']];
+    }
+
+    if ($k !== 2 && $k !== 3) {
+        $k = 3;
+    }
+
+    $cmd = 'python3 ' . escapeshellarg($scriptPath) . ' ' .
+           escapeshellarg((string) $haut_tot) . ' ' .
+           escapeshellarg((string) $diam_tronc) . ' ' .
+           escapeshellarg((string) $k);
+
+    exec($cmd, $output, $returnCode);
+
+
+    if ($returnCode !== 0) {
+        return ['status' => 500, 'body' => ['error' => 'Erreur lors de l\'exécution du script (code: ' . $returnCode . ')']];
+    }
+
+    $resultJson = implode('', $output);
+    $result = json_decode($resultJson, true);
+
+    if ($result === null) {
+        return ['status' => 500, 'body' => ['error' => 'Erreur de parsing JSON: ' . $resultJson]];
+    }
+
+    if (($result['status'] ?? null) === 'error') {
+        return ['status' => 500, 'body' => $result];
+    }
+
+    return [
+        'status' => 200, 
+        'body' => $result
+    ];
+    
+}
+
+function PredictClusters(PDO $pdo, array $params = []): array
+{
+    $body = $params['body'] ?? [];
+    $k = isset($body['k']) ? (int) $body['k'] : 3;
+
+    $arbres = getAllArbres($pdo)['body']['data'] ?? [];
+
+    $results = [];
+    
+    foreach ($arbres as $arbre) {
+        try {
+            $haut = (float) ($arbre['haut_tot'] ?? 0);
+            $diam = (float) ($arbre['diam_tronc'] ?? 0);
+            
+            if ($haut > 0 && $diam > 0) {
+                $prediction = predictTreeSize($pdo, ['haut_tot' => $haut, 'diam_tronc' => $diam, 'k' => $k]);
+                
+                if ($prediction && ($prediction['status'] ?? null) === 'success') {
+                    $arbre['cluster'] = $prediction['cluster'] ?? null;
+                    $arbre['cluster_label'] = $prediction['categorie'] ?? null;
+                }
+            }
+            
+            $results[] = $arbre;
+        } catch (Exception $e) {
+            $results[] = $arbre;
+        }
+    }
+    
+    return [
+        'status' => 200, 
+        'body' => $results
+    ];
+}
+
+
+
+
 
 function buildArbrePayload(array $body): array
 {

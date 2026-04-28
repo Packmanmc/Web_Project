@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clusters</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/proj4@2.10.0/dist/proj4.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/clusters.js"></script>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-brand">
+    <span class="leaf">🌳</span>
+    <span>Arbres - St Quentin</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="Accueil">Accueil</a></li>
+    <li><a href="ajouter.html" class="Ajouter">Ajouter</a></li>
+    <li><a href="visualisation.html" class="Visualisation">Visualisation</a></li>
+    <li><a href="clusters.html" class="Clusters">Clusters</a></li>
+  </ul>
+</nav>
+
+<div class="page-header">
+  <h1>Clusters</h1>
+  <p>Prédiction des groupes d'arbres par machine learning.</p>
+</div>
+
+<div class="container">
+
+  <div class="alert alert-err" id="alert-err" style="display:none">✕ <span id="alert-err-msg"></span></div>
+
+  <!-- Prédiction personnalisée -->
+  <div class="card card-primary">
+    <h2 class="section-title">Prédiction personnalisée</h2>
+    <p class="card-description">Choisissez soit une saisie manuelle, soit un arbre déjà présent dans la base.</p>
+
+    <div class="card card-nested">
+      <h3 class="section-title">Saisie manuelle</h3>
+      <form id="form-manual" class="form-no-margin">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="haut_tot">Hauteur totale (m)</label>
+            <input type="number" id="haut_tot" name="haut_tot" step="0.1" min="0.1" required placeholder="15.5">
+          </div>
+          <div class="form-group">
+            <label for="diam_tronc">Diamètre du tronc (cm)</label>
+            <input type="number" id="diam_tronc" name="diam_tronc" step="0.1" min="0.1" required placeholder="85.5">
+          </div>
+          <div class="form-group">
+            <label for="k">Nombre de clusters</label>
+            <select id="k" name="k">
+              <option value="2">Petit vs Grand</option>
+              <option value="3" selected>Petit vs Moyen vs Grand</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Prédire la saisie</button>
+      </form>
+    </div>
+
+    <div class="card card-nested">
+      <h3 class="section-title">Arbre existant</h3>
+      <form id="form-existing" class="form-no-margin">
+        <div class="form-row">
+          <div class="form-group form-group-full">
+            <label for="existing_tree_id">Choisir un arbre</label>
+            <select id="existing_tree_id" name="existing_tree_id" required>
+              <option value="">Chargement…</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="existing_k">Nombre de clusters</label>
+            <select id="existing_k" name="existing_k">
+              <option value="2">Petit vs Grand</option>
+              <option value="3" selected>Petit vs Moyen vs Grand</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Prédire l'arbre sélectionné</button>
+      </form>
+    </div>
+
+    <div id="prediction-result" style="display:none"></div>
+  </div>
+
+  <hr class="divider-spaced">
+
+  <!-- Analyse globale -->
+  <div class="card card-primary">
+    <h2 class="section-title">Analyse de tous les arbres</h2>
+
+    <div id="batch-form-section">
+      <div class="form-group form-group-sm">
+        <label for="batch_k">Nombre de clusters</label>
+        <select id="batch_k">
+          <option value="2">2 - Petit vs Grand</option>
+          <option value="3" selected>3 - Petit vs Moyen vs Grand</option>
+        </select>
+      </div>
+      <button id="btn-batch" class="btn btn-primary btn-lg">Analyser tous les arbres</button>
+    </div>
+
+    <div id="batch-results" style="display:none">
+      <div id="batch-stats" class="stats-row"></div>
+      <div id="batch-legend" class="legend"></div>
+      <div id="map-clusters" class="map-container"></div>
+      <div class="card">
+        <div class="table-bar">
+          <h2>Détail par cluster</h2>
+          <button id="btn-recalc" class="btn btn-ghost btn-sm">↺ Recalculer</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th><th>Catégorie</th><th>Espèce</th>
+                <th>H. totale</th><th>H. tronc</th><th>Ø tronc</th>
+                <th>État</th><th>Stade dev.</th><th>Remarquable</th>
+              </tr>
+            </thead>
+            <tbody id="batch-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>

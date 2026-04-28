@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ajouter un arbre</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.11.0/proj4.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/ajouter.js"></script>
+  <script src="assets/js/map.js"></script>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-brand">
+    <span class="leaf">🌳</span>
+    <span>Arbres - St Quentin</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="Accueil">Accueil</a></li>
+    <li><a href="ajouter.html" class="Ajouter">Ajouter</a></li>
+    <li><a href="visualisation.html" class="Visualisation">Visualisation</a></li>
+    <li><a href="clusters.html" class="Clusters">Clusters</a></li>
+  </ul>
+</nav>
+
+<div class="page-header">
+  <h1>Ajouter un arbre</h1>
+  <p>Renseignez les informations de l'arbre à enregistrer.</p>
+</div>
+
+<div class="container">
+
+  <div class="alert alert-ok" id="alert-ok" style="display:none">✓ Arbre enregistré. <a href="visualisation.html" class="alert-link">Voir tous les arbres</a></div>
+  <div class="alert alert-err" id="alert-err" style="display:none">✕ <span id="alert-err-msg"></span></div>
+
+  <div class="card form-wrap">
+    <form id="arbreForm" novalidate>
+
+      <p class="form-section">Identification</p>
+      <div class="form-body">
+        <div class="form-grid">
+
+          <div class="field">
+            <label>Espèce *</label>
+            <select name="id_especes" id="sel-especes" required>
+              <option value="">Chargement…</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Quartier *</label>
+            <select name="id_quartiers" id="sel-quartiers" required>
+              <option value="">Chargement…</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <p class="form-section">Dimensions</p>
+      <div class="form-body">
+        <div class="form-grid g3">
+
+          <div class="field">
+            <label>Hauteur totale (m) *</label>
+            <input type="number" name="haut_tot" step="0.1" min="0" placeholder="ex : 12.5" required>
+          </div>
+          <div class="field">
+            <label>Hauteur tronc (m) *</label>
+            <input type="number" name="haut_tronc" step="0.1" min="0" placeholder="ex : 3.2" required>
+          </div>
+          <div class="field">
+            <label>Diamètre tronc (cm) *</label>
+            <input type="number" name="diam_tronc" step="0.1" min="0" placeholder="ex : 45" required>
+          </div>
+        </div>
+      </div>
+
+      <p class="form-section">État &amp; classification</p>
+      <div class="form-body">
+        <div class="form-grid">
+
+          <div class="field">
+            <label>Age estimé</label>
+            <input type="number" name="age_estime" step="1" min="0" placeholder="ex : 80">
+          </div>
+
+          <div class="field">
+            <label>Stade de développement *</label>
+            <select name="id_stade_dev" id="sel-stades" required>
+              <option value="">Chargement…</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Situation *</label>
+            <select name="id_situations" id="sel-situations" required>
+              <option value="">Chargement…</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>État *</label>
+            <select name="id_etat" id="sel-etats" required>
+              <option value="">Chargement…</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>&nbsp;</label>
+            <label class="checkbox-row">
+              <input type="checkbox" name="remarquable" value="1">
+              <span>Arbre remarquable</span>
+            </label>
+          </div>
+
+        </div>
+      </div>
+
+      <p class="form-section">Localisation GPS</p>
+      <div class="form-body">
+        <div class="form-grid form-grid-margin">
+          <div class="field">
+            <label>Y *</label>
+            <input type="number" name="Y" id="lat" step="0.01" placeholder="ex : 9197856.12" required>
+          </div>
+          <div class="field">
+            <label>X *</label>
+            <input type="number" name="X" id="lng" step="0.01" placeholder="ex : 1702456.44" required>
+          </div>
+        </div>
+        <div id="map-pick" class="map-picker"></div>
+      </div>
+
+      <div class="form-footer">
+        <a href="index.html" class="btn btn-ghost">Annuler</a>
+        <button type="reset" class="btn btn-ghost">Réinitialiser</button>
+        <button type="submit" class="btn btn-primary" id="submit-btn">Enregistrer</button>
+      </div>
+
+    </form>
+  </div>
+</div>
+</body>
+</html>

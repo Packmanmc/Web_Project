@@ -62,5 +62,15 @@ return [
         'method' => 'GET',
         'endpoint' => '/etats',
         'handler' => 'GetAllEtat',
-    ]
+    ],
+    [
+        'method' => 'POST',
+        'endpoint' => '/predict',
+        'handler' => 'PredictTreeSize',
+    ],
+    [
+        'method' => 'POST',
+        'endpoint' => '/predict-clusters',
+        'handler' => 'PredictClusters',
+    ],
 ];

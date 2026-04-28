@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualisation</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.11.0/proj4.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/visualisation.js"></script>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-brand">
+    <span class="leaf">🌳</span>
+    <span>Arbres - St Quentin</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="Accueil">Accueil</a></li>
+    <li><a href="ajouter.html" class="Ajouter">Ajouter</a></li>
+    <li><a href="visualisation.html" class="Visualisation">Visualisation</a></li>
+    <li><a href="clusters.html" class="Clusters">Clusters</a></li>
+  </ul>
+</nav>
+
+<div class="page-header">
+  <h1>Visualisation</h1>
+  <p>Tableau et carte de tous les arbres de la base de données.</p>
+</div>
+
+<div class="container">
+
+  <div class="stats-row">
+    <div class="stat"><div class="val" id="stat-total">—</div><div class="lbl">Total</div></div>
+    <div class="stat"><div class="val" id="stat-remarquables">—</div><div class="lbl">Remarquables</div></div>
+    <div class="stat"><div class="val" id="stat-hauteur">—</div><div class="lbl">Hauteur moy.</div></div>
+    <div class="stat"><div class="val" id="stat-especes">—</div><div class="lbl">Espèces</div></div>
+  </div>
+
+  <!-- CARTE -->
+  <div>
+    <div id="map" class="viz-map"></div>
+  </div>
+
+  <!-- TABLEAU -->
+  <div>
+    <div class="card">
+      <div class="table-bar">
+        <h2 id="table-title">… arbres</h2>
+        <div class="viz-table-actions">
+          <input class="search" type="text" id="searchInput" placeholder="Rechercher…" oninput="filterTable()">
+          <a href="ajouter.html" class="btn btn-primary btn-sm">+ Ajouter</a>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="arbreTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Espèce</th>
+              <th>X</th>
+              <th>Y</th>
+              <th>H. totale</th>
+              <th>H. tronc</th>
+              <th>Ø tronc</th>
+              <th>Stade dev.</th>
+              <th>État</th>
+              <th>Remarquable</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="arbreTableBody">
+            <tr><td colspan="11" class="viz-empty-cell">Chargement…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="viz-row-count">
+        <span id="rowCount">0</span> ligne<span id="rowCountS"></span>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
