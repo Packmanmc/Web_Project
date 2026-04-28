@@ -417,25 +417,25 @@ function PredictClusters(PDO $pdo, array $params = []): array
         try {
             $haut = (float) ($arbre['haut_tot'] ?? 0);
             $diam = (float) ($arbre['diam_tronc'] ?? 0);
-            
+
             if ($haut > 0 && $diam > 0) {
-                $prediction = predictTreeSize($pdo, ['haut_tot' => $haut, 'diam_tronc' => $diam, 'k' => $k]);
-                
-                if ($prediction && ($prediction['status'] ?? null) === 'success') {
-                    $arbre['cluster'] = $prediction['cluster'] ?? null;
-                    $arbre['cluster_label'] = $prediction['categorie'] ?? null;
+                $prediction = PredictTreeSize($pdo, ['body' => ['haut_tot' => $haut, 'diam_tronc' => $diam, 'k' => $k]]);
+
+                if ($prediction && ($prediction['status'] ?? null) === 200) {
+                    $arbre['cluster']       = $prediction['body']['cluster']   ?? null;
+                    $arbre['cluster_label'] = $prediction['body']['categorie'] ?? null;
                 }
             }
-            
+
             $results[] = $arbre;
         } catch (Exception $e) {
             $results[] = $arbre;
         }
     }
-    
+
     return [
-        'status' => 200, 
-        'body' => $results
+        'status' => 200,
+        'body'   => ['status' => 'success', 'data' => $results],
     ];
 }
 

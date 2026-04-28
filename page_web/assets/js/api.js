@@ -91,6 +91,6 @@ function predictTreeSize(haut_tot, diam_tronc, k) {
     return apiPost('/predict', { haut_tot, diam_tronc, k });
 }
 
-function predictClusters(arbres, k=3) {
-    return apiPost('/predict_clusters', { arbres, k });
+function predictClusters(k=3) {
+    return apiPost('/predict-clusters', { k });
 }

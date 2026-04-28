@@ -140,12 +140,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const k = parseInt(document.getElementById('batch_k').value, 10);
     setBtn(this, 'Analyse en cours…', true);
     try {
-      const result = await predictClusters(arbres, k);
+      const result = await predictClusters(k);
+      console.log('Batch result:', result);
       if (result.status !== 'success') throw new Error(result.error || "Erreur lors de l'analyse");
-      renderBatchResults(result.data);
-      document.getElementById('batch-form-section').style.display = 'none';
-      document.getElementById('batch-results').style.display = '';
-      initClusterMap(result.data);
+        renderBatchResults(result.data);
+        document.getElementById('batch-form-section').style.display = 'none';
+        document.getElementById('batch-results').style.display = '';
+        initClusterMap(result.data);
     } catch (err) {
       showErr(err.message);
     } finally {
@@ -173,6 +174,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function renderBatchResults(clusters) {
     const { counts, colors } = clusterMeta(clusters);
+    console.log('Cluster counts:', counts);
+    console.log('Cluster colors:', colors);
+    console.log('Clusters:', clusters);
 
     // Stats
     let statsHtml = `
