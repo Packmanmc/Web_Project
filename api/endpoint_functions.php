@@ -13,6 +13,32 @@ function Health(PDO $pdo, array $params = []): array
     ];
 }
 
+function GetStats(PDO $pdo, array $params = []): array
+{
+    $sql = <<<SQL
+        SELECT 
+            COUNT(*) AS total, 
+            SUM(remarquable) AS remarquables, 
+            COUNT(DISTINCT id_especes) AS especes,
+            AVG(haut_tot) AS hauteur_moyenne,
+            AVG(age_estime) AS age_moyen
+        FROM arbre
+    SQL;
+    $stmt = $pdo->query($sql);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return [
+        'status' => 200,
+        'body' => [
+            'total' => (int) ($row['total'] ?? 0),
+            'remarquables' => (int) ($row['remarquables'] ?? 0),
+            'especes' => (int) ($row['especes'] ?? 0),
+            'hauteur_moyenne' => (float) ($row['hauteur_moyenne'] ?? 0),
+            'age_moyen' => (float) ($row['age_moyen'] ?? 0),
+        ],
+    ];
+}
+
 function GetAllArbres(PDO $pdo, array $params = []): array
 {
     $sql = <<<SQL
@@ -267,6 +293,64 @@ function getMissingArbreFields(array $body): array
 
     return $missing;
 }
+
+
+function getAllEspeces(PDO $pdo): array
+{
+    $sql = 'SELECT id, nom FROM especes ORDER BY nom ASC';
+    $stmt = $pdo->query($sql);
+
+    return [
+        'status' => 200,
+        'body' => ['data' => $stmt->fetchAll(PDO::FETCH_ASSOC)],
+    ];
+}
+
+
+function getAllQuartiers(PDO $pdo): array
+{
+    $sql = 'SELECT id, quartier, secteur FROM quartiers ORDER BY quartier ASC';
+    $stmt = $pdo->query($sql);
+
+    return [
+        'status' => 200,
+        'body' => ['data' => $stmt->fetchAll(PDO::FETCH_ASSOC)],
+    ];
+}
+
+function getAllStadeDev(PDO $pdo): array
+{
+    $sql = 'SELECT id, libelle FROM stade_dev ORDER BY libelle ASC';
+    $stmt = $pdo->query($sql);
+
+    return [
+        'status' => 200,
+        'body' => ['data' => $stmt->fetchAll(PDO::FETCH_ASSOC)],
+    ];
+}
+
+function getAllSituations(PDO $pdo): array
+{
+    $sql = 'SELECT id, libelle FROM situations ORDER BY libelle ASC';
+    $stmt = $pdo->query($sql);
+
+    return [
+        'status' => 200,
+        'body' => ['data' => $stmt->fetchAll(PDO::FETCH_ASSOC)],
+    ];
+}
+
+function getAllEtat(PDO $pdo): array
+{
+    $sql = 'SELECT id, libelle FROM etat ORDER BY libelle ASC';
+    $stmt = $pdo->query($sql);
+
+    return [
+        'status' => 200,
+        'body' => ['data' => $stmt->fetchAll(PDO::FETCH_ASSOC)],
+    ];
+}
+
 
 function buildArbrePayload(array $body): array
 {

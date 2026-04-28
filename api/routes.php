@@ -10,6 +10,11 @@ return [
     ],
     [
         'method' => 'GET',
+        'endpoint' => '/stats',
+        'handler' => 'GetStats',
+    ],
+    [
+        'method' => 'GET',
         'endpoint' => '/arbres',
         'handler' => 'GetAllArbres',
     ],
@@ -33,4 +38,29 @@ return [
         'endpoint' => '/arbres/{id}',
         'handler' => 'DeleteArbre',
     ],
+    [
+        'method' => 'GET',
+        'endpoint' => '/especes',
+        'handler' => 'GetAllEspeces',
+    ],
+    [
+        'method' => 'GET',
+        'endpoint' => '/quartiers',
+        'handler' => 'GetAllQuartiers',
+    ],
+    [
+        'method' => 'GET',
+        'endpoint' => '/stades',
+        'handler' => 'GetAllStadeDev',
+    ],
+    [
+        'method' => 'GET',
+        'endpoint' => '/situations',
+        'handler' => 'GetAllSituations',
+    ],
+    [
+        'method' => 'GET',
+        'endpoint' => '/etats',
+        'handler' => 'GetAllEtat',
+    ]
 ];
